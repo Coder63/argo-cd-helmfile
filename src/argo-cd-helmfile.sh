@@ -57,8 +57,8 @@ fi
 SCRIPT_NAME=$(basename "${0}")
 
 # expand nested variables
-if [[ "${HELMFILE_GLOBAL_OPTIONS}" ]]; then
-  HELMFILE_GLOBAL_OPTIONS=$(variable_expansion "${HELMFILE_GLOBAL_OPTIONS}")
+if [[ "${ARGOCD_ENV_HELMFILE_GLOBAL_OPTIONS}" ]]; then
+  HELMFILE_GLOBAL_OPTIONS=$(variable_expansion "${ARGOCD_ENV_HELMFILE_GLOBAL_OPTIONS}")
 fi
 
 if [[ "${HELMFILE_TEMPLATE_OPTIONS}" ]]; then
@@ -69,8 +69,8 @@ if [[ "${HELM_TEMPLATE_OPTIONS}" ]]; then
   HELM_TEMPLATE_OPTIONS=$(variable_expansion "${HELM_TEMPLATE_OPTIONS}")
 fi
 
-if [[ "${HELMFILE_INIT_SCRIPT_FILE}" ]]; then
-  HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${HELMFILE_INIT_SCRIPT_FILE}")
+if [[ "${ARGOCD_ENV_HELMFILE_INIT_SCRIPT_FILE}" ]]; then
+  HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${ARGOCD_ENV_HELMFILE_INIT_SCRIPT_FILE}")
 fi
 
 if [[ "${HELM_DATA_HOME}" ]]; then
