@@ -112,6 +112,10 @@ fi
 
 helmfile="${helmfile} --helm-binary ${helm} --no-color --allow-no-matching-release"
 
+if [[ "${ARGOCD_APP_NAMESPACE}" && ! "${HELMFILE_USE_CONTEXT_NAMESPACE}" ]]; then
+  helmfile="${helmfile} --namespace ${ARGOCD_APP_NAMESPACE}"
+fi
+
 if [[ "${ARGOCD_APP_NAMESPACE}" ]]; then
   helmfile="${helmfile} --namespace ${ARGOCD_APP_NAMESPACE}"
 fi
@@ -197,6 +201,10 @@ case $phase in
     if [ ! -z "${HELMFILE_INIT_SCRIPT_FILE}" ]; then
       HELMFILE_INIT_SCRIPT_FILE=$(realpath "${HELMFILE_INIT_SCRIPT_FILE}")
       bash "${HELMFILE_INIT_SCRIPT_FILE}"
+    fi
+    
+    if [[ "${HELMFILE_CACHE_CLEANUP}" ]]; then
+      ${helmfile} cache cleanup
     fi
 
     # https://github.com/roboll/helmfile/issues/1064
