@@ -73,6 +73,10 @@ if [[ "${HELMFILE_INIT_SCRIPT_FILE}" ]]; then
   HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${HELMFILE_INIT_SCRIPT_FILE}")
 fi
 
+if [[ "${HELMFILE_REGION}" ]]; then
+  HELMFILE_REGION=$(variable_expansion "${HELMFILE_REGION}")
+fi
+
 if [[ "${HELM_DATA_HOME}" ]]; then
   export HELM_DATA_HOME=$(variable_expansion "${HELM_DATA_HOME}")
 fi
@@ -198,11 +202,12 @@ case $phase in
       HELMFILE_INIT_SCRIPT_FILE=$(realpath "${HELMFILE_INIT_SCRIPT_FILE}")
       bash "${HELMFILE_INIT_SCRIPT_FILE}"
     fi
-
+  
+    echo "repos"
     # https://github.com/roboll/helmfile/issues/1064
-    ${helmfile} repos
+    ${helmfile} ${HELMFILE_REGION} repos
     ;;
-
+  echo "done repos"
   "generate")
     echoerr "starting generate"
 
@@ -249,7 +254,8 @@ case $phase in
     fi
 
     ${helmfile} \
-      template ${INTERNAL_HELMFILE_TEMPLATE_OPTIONS} \
+      template 
+      --skip-deps ${INTERNAL_HELMFILE_TEMPLATE_OPTIONS} \
       --args "${INTERNAL_HELM_TEMPLATE_OPTIONS} ${HELM_TEMPLATE_OPTIONS}" \
       ${HELMFILE_TEMPLATE_OPTIONS}
     ;;
