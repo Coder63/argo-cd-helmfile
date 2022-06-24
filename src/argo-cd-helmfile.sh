@@ -203,11 +203,9 @@ case $phase in
       bash "${HELMFILE_INIT_SCRIPT_FILE}"
     fi
   
-    echo "repos"
     # https://github.com/roboll/helmfile/issues/1064
     ${helmfile} ${HELMFILE_REGION} repos
     ;;
-    echo "done repos"
     
   "generate")
     echoerr "starting generate"
@@ -258,7 +256,7 @@ case $phase in
       template ${INTERNAL_HELMFILE_TEMPLATE_OPTIONS} \
       --args "${INTERNAL_HELM_TEMPLATE_OPTIONS} ${HELM_TEMPLATE_OPTIONS}" \
       ${HELMFILE_TEMPLATE_OPTIONS}
-    ;;
+    ;; 
 
   *)
     echoerr "invalid invocation"
