@@ -73,10 +73,6 @@ if [[ "${HELMFILE_INIT_SCRIPT_FILE}" ]]; then
   HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${HELMFILE_INIT_SCRIPT_FILE}")
 fi
 
-if [[ "${HELMFILE_REGION}" ]]; then
-  HELMFILE_REGION=$(variable_expansion "${HELMFILE_REGION}")
-fi
-
 if [[ "${HELM_DATA_HOME}" ]]; then
   export HELM_DATA_HOME=$(variable_expansion "${HELM_DATA_HOME}")
 fi
@@ -107,7 +103,7 @@ else
   else
     LOCAL_HELMFILE_BINARY="/tmp/__${SCRIPT_NAME}__/bin/helmfile"
     if [[ ! -x "${LOCAL_HELMFILE_BINARY}" ]]; then
-      wget -O "${LOCAL_HELMFILE_BINARY}" "https://github.com/roboll/helmfile/releases/download/v0.144.0/helmfile_linux_amd64"
+      wget -O "${LOCAL_HELMFILE_BINARY}" "https://github.com/roboll/helmfile/releases/download/v0.138.7/helmfile_linux_amd64"
       chmod +x "${LOCAL_HELMFILE_BINARY}"
     fi
     helmfile="${LOCAL_HELMFILE_BINARY}"
@@ -202,11 +198,11 @@ case $phase in
       HELMFILE_INIT_SCRIPT_FILE=$(realpath "${HELMFILE_INIT_SCRIPT_FILE}")
       bash "${HELMFILE_INIT_SCRIPT_FILE}"
     fi
-  
+
     # https://github.com/roboll/helmfile/issues/1064
-    ${helmfile} ${HELMFILE_REGION} repos
+    ${helmfile} repos
     ;;
-    
+
   "generate")
     echoerr "starting generate"
 
@@ -256,7 +252,7 @@ case $phase in
       template ${INTERNAL_HELMFILE_TEMPLATE_OPTIONS} \
       --args "${INTERNAL_HELM_TEMPLATE_OPTIONS} ${HELM_TEMPLATE_OPTIONS}" \
       ${HELMFILE_TEMPLATE_OPTIONS}
-    ;; 
+    ;;
 
   *)
     echoerr "invalid invocation"
