@@ -82,7 +82,7 @@ phase=$1
 # setup the env
 # HELM_HOME is deprecated with helm-v3, uses XDG dirs
 export HELM_HOME="/tmp/__${SCRIPT_NAME}__/apps/${ARGOCD_APP_NAME}"
-export HELMFILE_HELMFILE_HELMFILED="${PWD}/.__${SCRIPT_NAME}__helmfile.d"
+export HELMFILE_HELMFILE_HELMFILED="${PWD}/.__${SCRIPT_NAME}__helmfiles"
 
 if [[ ! -d "/tmp/__${SCRIPT_NAME}__/bin" ]]; then
   mkdir -p "/tmp/__${SCRIPT_NAME}__/bin"
@@ -161,16 +161,16 @@ case $phase in
 
       case "${HELMFILE_HELMFILE_STRATEGY}" in
         "INCLUDE")
-          if [[ -f "helmfile.yaml" && -d "helmfile.d" ]]; then
-            echoerr "configuration conlict error: you can have either helmfile.yaml or helmfile.d, but not both"
+          if [[ -f "helmfile.yaml" && -d "helmfiles" ]]; then
+            echoerr "configuration conflict error: you can have either helmfile.yaml or helmfiles, but not both"
           fi
 
           if [[ -f "helmfile.yaml" ]]; then
             cp -a "helmfile.yaml" "${HELMFILE_HELMFILE_HELMFILED}/"
           fi
 
-          if [[ -d "helmfile.d" ]]; then
-            cp -ar "helmfile.d/"* "${HELMFILE_HELMFILE_HELMFILED}/"
+          if [[ -d "helmfiles" ]]; then
+            cp -ar "helmfiles/"* "${HELMFILE_HELMFILE_HELMFILED}/"
           fi
           ;;
         "REPLACE") ;;
