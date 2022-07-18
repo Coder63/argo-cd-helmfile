@@ -57,8 +57,8 @@ fi
 SCRIPT_NAME=$(basename "${0}")
 
 # expand nested variables
-if [[ "${HELMFILE_GLOBAL_OPTIONS}" ]]; then
-  HELMFILE_GLOBAL_OPTIONS=$(variable_expansion "${HELMFILE_GLOBAL_OPTIONS}")
+if [[ "${ARGOCD_ENV_HELMFILE_GLOBAL_OPTIONS}" ]]; then
+  HELMFILE_GLOBAL_OPTIONS=$(variable_expansion "${ARGOCD_ENV_HELMFILE_GLOBAL_OPTIONS}")
 fi
 
 if [[ "${HELMFILE_TEMPLATE_OPTIONS}" ]]; then
@@ -69,8 +69,8 @@ if [[ "${HELM_TEMPLATE_OPTIONS}" ]]; then
   HELM_TEMPLATE_OPTIONS=$(variable_expansion "${HELM_TEMPLATE_OPTIONS}")
 fi
 
-if [[ "${HELMFILE_INIT_SCRIPT_FILE}" ]]; then
-  HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${HELMFILE_INIT_SCRIPT_FILE}")
+if [[ "${ARGOCD_ENV_HELMFILE_INIT_SCRIPT_FILE}" ]]; then
+  HELMFILE_INIT_SCRIPT_FILE=$(variable_expansion "${ARGOCD_ENV_HELMFILE_INIT_SCRIPT_FILE}")
 fi
 
 if [[ "${HELM_DATA_HOME}" ]]; then
@@ -82,7 +82,7 @@ phase=$1
 # setup the env
 # HELM_HOME is deprecated with helm-v3, uses XDG dirs
 export HELM_HOME="/tmp/__${SCRIPT_NAME}__/apps/${ARGOCD_APP_NAME}"
-export HELMFILE_HELMFILE_HELMFILED="${PWD}/.__${SCRIPT_NAME}__helmfile.d"
+export HELMFILE_HELMFILE_HELMFILED="${PWD}/.__${SCRIPT_NAME}__helmfiles"
 
 if [[ ! -d "/tmp/__${SCRIPT_NAME}__/bin" ]]; then
   mkdir -p "/tmp/__${SCRIPT_NAME}__/bin"
@@ -161,16 +161,16 @@ case $phase in
 
       case "${HELMFILE_HELMFILE_STRATEGY}" in
         "INCLUDE")
-          if [[ -f "helmfile.yaml" && -d "helmfile.d" ]]; then
-            echoerr "configuration conlict error: you can have either helmfile.yaml or helmfile.d, but not both"
+          if [[ -f "helmfile.yaml" && -d "helmfiles" ]]; then
+            echoerr "configuration conflict error: you can have either helmfile.yaml or helmfiles, but not both"
           fi
 
           if [[ -f "helmfile.yaml" ]]; then
             cp -a "helmfile.yaml" "${HELMFILE_HELMFILE_HELMFILED}/"
           fi
 
-          if [[ -d "helmfile.d" ]]; then
-            cp -ar "helmfile.d/"* "${HELMFILE_HELMFILE_HELMFILED}/"
+          if [[ -d "helmfiles" ]]; then
+            cp -ar "helmfiles/"* "${HELMFILE_HELMFILE_HELMFILED}/"
           fi
           ;;
         "REPLACE") ;;
