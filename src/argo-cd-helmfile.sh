@@ -103,7 +103,26 @@ else
   else
     LOCAL_HELMFILE_BINARY="/tmp/__${SCRIPT_NAME}__/bin/helmfile"
     if [[ ! -x "${LOCAL_HELMFILE_BINARY}" ]]; then
-      wget -O "${LOCAL_HELMFILE_BINARY}" "https://github.com/roboll/helmfile/releases/download/v0.144.0/helmfile_linux_amd64"
+      case $(uname -m) in
+        "x86")
+          GO_ARCH=386
+          ;;
+        "x86_64")
+          GO_ARCH=amd64
+          ;;
+        "aarch64")
+          GO_ARCH=arm64
+          ;;
+        *)
+          echoerr "unknow arch to download helmfile"
+          exit 1
+          ;;
+      esac
+      HELMFILE_VERSION=${HELMFILE_VERSION:-v0.150.0}
+      wget -O- "${LOCAL_HELMFILE_BINARY}" "https://github.com/helmfile/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${HELMFILE_VERSION:1}_linux_${GO_ARCH}.tar.gz" | tar zxv -C $(dirname "${LOCAL_HELMFILE_BINARY}") helmfile
+      if [[ "$(dirname "${LOCAL_HELMFILE_BINARY}")"/helmfile != "${LOCAL_HELMFILE_BINARY}" ]]; then
+        mv "$(dirname "${LOCAL_HELMFILE_BINARY}")"/helmfile "${LOCAL_HELMFILE_BINARY}"
+      fi
       chmod +x "${LOCAL_HELMFILE_BINARY}"
     fi
     helmfile="${LOCAL_HELMFILE_BINARY}"
@@ -146,6 +165,20 @@ echoerr "$(${helm} version --short --client)"
 echoerr "$(${helmfile} --version)"
 
 case $phase in
+  "discover")
+    echoerr "starting discover"
+    test -n "$(find . -type d -name "helmfiles")" && {
+      echo "valid helmfiles content discovered"
+      exit 0
+    }
+    test -n "$(find . -type f -name "helmfile.yaml")" && {
+      echo "valid helmfile content discovered"
+      exit 0
+    }
+    echoerr "no valid helmfile content discovered"
+    exit 1
+    ;;
+
   "init")
     echoerr "starting init"
 
